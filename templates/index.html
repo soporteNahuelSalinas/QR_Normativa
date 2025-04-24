@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Códigos QR</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <main>
+      <h1>Generador de Códigos QR</h1>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul>
+            {% for category, message in messages %}
+              <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+      
+      <form action="/" method="POST" enctype="multipart/form-data">
+          <input type="file" name="file" accept=".csv" required><br>
+          <button type="submit">1. Cargar CSV</button>
+      </form>
+      <!-- 
+      <div class="currency-selector">
+          <h3>2. Seleccionar Moneda:</h3>
+          <label>
+              <input type="radio" name="currency" value="ARS" checked> Pesos Argentinos
+          </label>
+          <label>
+              <input type="radio" name="currency" value="USD"> Dólares Estadounidenses
+          </label>
+      </div>
+ -->
+      <form action="/generate" method="POST">
+          <input type="hidden" name="currency" id="selectedCurrency" value="ARS">
+          <button type="submit">2. Generar QR</button>
+      </form>
+      
+      <form action="/generate_cards" method="POST">
+          <input type="hidden" name="currency" id="selectedCurrencyCards" value="ARS">
+          <button type="submit">3. Generar Tarjetas de Productos</button>
+      </form>
+    </main>
+
+    <script>
+        // Actualizar el valor de la moneda seleccionada en los formularios
+        document.querySelectorAll('input[name="currency"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                document.getElementById('selectedCurrency').value = e.target.value;
+                document.getElementById('selectedCurrencyCards').value = e.target.value;
+            });
+        });
+    </script>
+</body>
+</html>
