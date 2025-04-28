@@ -1,1 +1,258 @@
-237a0fa2-dc7c-4763-816c-d57dbb8a027a
+{
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "insert into encuestas (fecha, calificacion, detalle, campana, fuente, telefono, sucursal, vendedor, canal)values(' {{ $now }} ', '{{ $('Encuesta Tablet').item.json.body.nivel }}', '{{ $('Encuesta Tablet').item.json.body.aspecto }}', '{{ $('Encuesta Tablet').item.json.body.producto }}', '{{ $('Encuesta Tablet').item.json.body.fuente }}', '{{ $('Encuesta Tablet').item.json.body.telefono }}', '{{ $('Encuesta Tablet').item.json.body.sucursal }}', '{{ $('Encuesta Tablet').item.json.body.vendedor }}', 'Tablet')",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        640,
+        0
+      ],
+      "id": "d25ef26a-7da3-43d8-b057-34a69cce8ef9",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "qrOj0AMp1KIVxzh0",
+          "name": "Encuestas Anyway - supabase"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        900,
+        -180
+      ],
+      "id": "3bf62a06-8323-43f4-a0b7-baeb859d6bb5",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "encuestas-supabase",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        160,
+        20
+      ],
+      "id": "82a3e3a6-5865-4658-982d-5a823fe3445e",
+      "name": "Encuesta Tablet",
+      "webhookId": "5262f1c3-570a-4a49-91e8-9cc92ad2cb4b"
+    },
+    {
+      "parameters": {
+        "chatId": "1264420272",
+        "text": "=⚠Error en el workflow \"Encuesta Vendedores - Supabase\"⚠\n¡Revisar lo antes posible!",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1060,
+        20
+      ],
+      "id": "a9b84a28-0871-4b53-8065-baf94ecb3614",
+      "name": "Telegram",
+      "credentials": {
+        "telegramApi": {
+          "id": "hbJIs3iFNqc81rbz",
+          "name": "Nahuel-Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "7058443389",
+        "text": "=⚠Error en el workflow \"Encuesta Vendedores - Supabase\"⚠\n¡Revisar lo antes posible!",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1240,
+        20
+      ],
+      "id": "33faf3f7-5eb0-44b1-a863-01cde6bb6ce4",
+      "name": "Telegram1",
+      "credentials": {
+        "telegramApi": {
+          "id": "YtnDa7Pw2BdiXd2O",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        860,
+        20
+      ],
+      "id": "985bcf0f-7046-42b3-a002-1eb045430878",
+      "name": "Respond to Webhook error"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "97a7f0e2-b24c-43f1-8b75-2d117d8e8067",
+              "leftValue": "={{ $json.body.nivel }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        380,
+        20
+      ],
+      "id": "755c49e3-8a3e-4cb7-9bf1-2b532f65947f",
+      "name": "If"
+    }
+  ],
+  "connections": {
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Encuesta Tablet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram": {
+      "main": [
+        [
+          {
+            "node": "Telegram1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook error": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "Encuesta Tablet": [
+      {
+        "headers": {
+          "host": "known-moccasin-magical.ngrok-free.app",
+          "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "content-length": "236",
+          "accept": "*/*",
+          "accept-encoding": "gzip, deflate, br, zstd",
+          "accept-language": "es-419,es;q=0.9,en;q=0.8,en-US;q=0.7",
+          "content-type": "application/json",
+          "origin": "https://encuesta-reventon.vercel.app",
+          "referer": "https://encuesta-reventon.vercel.app/",
+          "sec-ch-ua": "\"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\"",
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-platform": "\"Android\"",
+          "sec-fetch-dest": "empty",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-site": "cross-site",
+          "x-forwarded-for": "190.57.250.107",
+          "x-forwarded-host": "known-moccasin-magical.ngrok-free.app",
+          "x-forwarded-proto": "https"
+        },
+        "params": {},
+        "query": {},
+        "body": {
+          "vendedor": "Alan",
+          "sucursal": "Sucursal principal",
+          "nivel": "Buena",
+          "aspecto": "🤝Amabilidad, empatía",
+          "motivacionCompra": "Ofertas atractivas",
+          "descubrioOfertas": null,
+          "medioDescubrimiento": null,
+          "experienciaRuleta": null,
+          "telefono": null
+        },
+        "webhookUrl": "https://known-moccasin-magical.ngrok-free.app/webhook/encuestas-supabase",
+        "executionMode": "production"
+      }
+    ]
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8e579e21f791561a41768cb251ed1dd5f1d8675f5553865382e898e6e5fb3ee8"
+  }
+}
